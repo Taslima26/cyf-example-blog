@@ -7,7 +7,7 @@ Run this to start the backend express server on port 3001:
 ```bash
 $ cd backend
 $ npm install
-$ npm start
+$ node index-get-excercises.js
 ```
 
 ## Frontend

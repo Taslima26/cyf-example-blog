@@ -1,10 +1,4 @@
-import Config from '../config/config';
-
 class PostService {
-  constructor() {
-    this.config = new Config();
-  }
-
   async retrievePosts() {
     let url = "http://localhost:3001/posts.json";
     let headers = {};
