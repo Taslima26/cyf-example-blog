@@ -97,7 +97,7 @@ server.delete('/posts/:postId',  (req, res) => {
 
 //What is the URL of this endpoint?
 
-//in order to be able to test it, 
+// in order to be able to test it, you need to delete some posts first
 server.delete('/users/:userId',  (req, res) => {
   const { userId } = req.params;
   const userPosts = database.posts.filter(post => post.user_id === parseInt(userId));
