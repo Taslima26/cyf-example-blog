@@ -17,7 +17,7 @@ server.get('/posts.json',  (req, res) => {
   res.json(database.posts)
 });
 
-server.get('/posts/:postId.json',  (req, res) => {
+server.get('/posts/:postId',  (req, res) => {
   const { postId } = req.params;
   const post = database.posts.find(p => p.id === parseInt(postId));
   res.json(post)
@@ -42,7 +42,7 @@ server.get('/users/:userId/posts',  (req, res) => {
 //Relation: The user has posts, and we need one of them (singular)
 //so the endpoint will be: /users/{user_id}/posts/{post_id}
 
-server.get('/users/:userId/posts/:postId.json',  (req, res) => {
+server.get('/users/:userId/posts/:postId',  (req, res) => {
   const { userId, postId } = req.params;
   const posts = database.posts.filter(p => p.user_id === parseInt(userId));
   const post = posts.find(p => p.id === parseInt(postId));
@@ -64,13 +64,13 @@ server.get('/users/:userId/posts/:postId.json',  (req, res) => {
 
 //What is the URL of this endpoint?
 server.post('/posts',  (req, res) => {
-  let newPost = req.body;
-  let userId = newPost.user_id;
-  let user = database.users.find(u => u.id === parseInt(userId))
-  if (user !== undefined) {
-    let newId = database.posts[database.posts.length -1].id + 1;
-    newPost.id = newId;
-    database.posts.push(newPost);
+  let newPost = req.body; 
+  let userId = newPost.user_id; //the user id of the new post
+  let user = database.users.find(u => u.id === parseInt(userId)) //find the user based on the user id
+  if (user !== undefined) { //if the user exists
+    let newId = database.posts[database.posts.length -1].id + 1; //create the new id
+    newPost.id = newId; //set the new post's id
+    database.posts.push(newPost); //store in the array
     res.status(200).send();  
   } else {
     res.status(400).send();
@@ -78,19 +78,8 @@ server.post('/posts',  (req, res) => {
 });
 
 
-//3. I wish to delete one single post based on its id
 
-//What is the URL of this endpoint?
-
-// server.delete('/posts/:postId.json',  (req, res) => {
-//   const { postId } = req.params;
-//   let index = database.posts.findIndex(post => post.id === postId)
-//   database.posts.splice(index,1)
-//   res.status(200).send();
-// });
-
-
-//4. (Advanced) I wish to delete a user only if it doesn't have a post
+//(Advanced) I wish to delete a user only if it doesn't have a post
 
 //What is the URL of this endpoint?
 

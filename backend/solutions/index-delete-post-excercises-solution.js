@@ -13,11 +13,15 @@ server.use((req, res, next) => {
 server.use(express.json());
 server.use(cors())
 
-server.get('/posts.json',  (req, res) => {
+server.get('/posts',  (req, res) => {
   res.json(database.posts)
 });
 
-server.get('/posts/:postId.json',  (req, res) => {
+server.get('/users',  (req, res) => {
+  res.json(database.users)
+});
+
+server.get('/posts/:postId',  (req, res) => {
   const { postId } = req.params;
   const post = database.posts.find(p => p.id === parseInt(postId));
   res.json(post)
@@ -42,7 +46,7 @@ server.get('/users/:userId/posts',  (req, res) => {
 //Relation: The user has posts, and we need one of them (singular)
 //so the endpoint will be: /users/{user_id}/posts/{post_id}
 
-server.get('/users/:userId/posts/:postId.json',  (req, res) => {
+server.get('/users/:userId/posts/:postId',  (req, res) => {
   const { userId, postId } = req.params;
   const posts = database.posts.filter(p => p.user_id === parseInt(userId));
   const post = posts.find(p => p.id === parseInt(postId));
@@ -64,13 +68,13 @@ server.get('/users/:userId/posts/:postId.json',  (req, res) => {
 
 //What is the URL of this endpoint?
 server.post('/posts',  (req, res) => {
-  let newPost = req.body;
-  let userId = newPost.user_id;
-  let user = database.users.find(u => u.id === parseInt(userId))
-  if (user !== undefined) {
-    let newId = database.posts[database.posts.length -1].id + 1;
-    newPost.id = newId;
-    database.posts.push(newPost);
+  let newPost = req.body; 
+  let userId = newPost.user_id; //the user id of the new post
+  let user = database.users.find(u => u.id === parseInt(userId)) //find the user based on the user id
+  if (user !== undefined) { //if the user exists
+    let newId = database.posts[database.posts.length -1].id + 1; //create the new id
+    newPost.id = newId; //set the new post's id
+    database.posts.push(newPost); //store in the array
     res.status(200).send();  
   } else {
     res.status(400).send();
@@ -82,29 +86,31 @@ server.post('/posts',  (req, res) => {
 
 //What is the URL of this endpoint?
 
-// server.delete('/posts/:postId.json',  (req, res) => {
-//   const { postId } = req.params;
-//   let index = database.posts.findIndex(post => post.id === postId)
-//   database.posts.splice(index,1)
-//   res.status(200).send();
-// });
-
+server.delete('/posts/:postId',  (req, res) => {
+  const { postId } = req.params;
+  let index = database.posts.findIndex(post => post.id === parseInt(postId))
+  database.posts.splice(index,1)
+  res.status(200).send();
+});
 
 //4. (Advanced) I wish to delete a user only if it doesn't have a post
 
 //What is the URL of this endpoint?
 
+//in order to be able to test it, 
 server.delete('/users/:userId',  (req, res) => {
   const { userId } = req.params;
-  let index = database.posts.findIndex(user => user.id === userId)
-  const posts = database.posts.filter(post => post.user_id === parseInt(userId));
-  if (posts.length !== 0) {
+  const userPosts = database.posts.filter(post => post.user_id === parseInt(userId));
+  if (userPosts.length === 0) {
+    let index = database.users.findIndex(user => user.id === parseInt(userId));
     database.users.splice(index,1)
     res.status(200).send();  
   } else {
     res.status(400).send();
   }
 });
+
+
 
 
 server.listen(port, () => console.log(`[MockServer] listening at http://localhost:${port}`));
